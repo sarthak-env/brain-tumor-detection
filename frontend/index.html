@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroScan AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────
+   APPLE DARK SYSTEM TOKENS
+───────────────────────────────────── */
+:root {
+  /* Backgrounds — layered depth */
+  --bg-base:      #000000;
+  --bg-elevated:  #1C1C1E;
+  --bg-tinted:    #2C2C2E;
+  --bg-grouped:   #141414;
+
+  /* Separators */
+  --sep:          rgba(255,255,255,0.10);
+  --sep-opaque:   #38383A;
+
+  /* Labels */
+  --label-1:      #FFFFFF;
+  --label-2:      rgba(235,235,245,0.60);
+  --label-3:      rgba(235,235,245,0.30);
+  --label-4:      rgba(235,235,245,0.16);
+
+  /* Fills */
+  --fill-1:       rgba(120,120,128,0.36);
+  --fill-2:       rgba(120,120,128,0.24);
+  --fill-3:       rgba(118,118,128,0.18);
+
+  /* System Colors */
+  --blue:         #0A84FF;
+  --blue-dim:     rgba(10,132,255,0.20);
+  --blue-glow:    rgba(10,132,255,0.35);
+  --green:        #30D158;
+  --green-dim:    rgba(48,209,88,0.18);
+  --red:          #FF453A;
+  --orange:       #FF9F0A;
+  --orange-dim:   rgba(255,159,10,0.18);
+  --indigo:       #5E5CE6;
+  --pink:         #FF375F;
+  --teal:         #5AC8FA;
+
+  /* Type scale */
+  --text-xs:  10px;
+  --text-sm:  12px;
+  --text-base:13px;
+  --text-md:  15px;
+  --text-lg:  17px;
+  --text-xl:  22px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+
+  /* Radius */
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   20px;
+}
+
+/* ─────────────────────────────────────
+   RESET
+───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-base);
+  color: var(--label-1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.47;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────
+   APP SHELL
+───────────────────────────────────── */
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ─────────────────────────────────────
+   TITLEBAR / NAV
+   Apple-style: very thin, blurred,
+   single-row, minimal chrome
+───────────────────────────────────── */
+.titlebar {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(28,28,30,0.72);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 0.5px solid var(--sep);
+  flex-shrink: 0;
+  z-index: 100;
+  position: relative;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: linear-gradient(145deg, #1a6aff, #0A55E0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.app-icon svg { width: 16px; height: 16px; }
+
+.app-name {
+  font-size: var(--text-md);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--label-1);
+}
+
+.titlebar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--fill-3);
+  border: 0.5px solid var(--sep);
+  border-radius: 20px;
+  padding: 5px 14px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 2px rgba(48,209,88,0.25);
+  animation: statusPulse 3s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%,100%{ box-shadow: 0 0 0 2px rgba(48,209,88,0.25); }
+  50%    { box-shadow: 0 0 0 4px rgba(48,209,88,0.1); }
+}
+.titlebar-center span {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--label-2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.badge-blue {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border: 0.5px solid rgba(10,132,255,0.25);
+}
+.badge-green {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 0.5px solid rgba(48,209,88,0.25);
+}
+
+.time-display {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--label-3);
+  letter-spacing: 0.3px;
+  min-width: 54px;
+  text-align: right;
+}
+
+/* ─────────────────────────────────────
+   CONTENT GRID
+───────────────────────────────────── */
+.content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 288px 260px 1fr;
+  gap: 10px;
+  padding: 10px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─────────────────────────────────────
+   CARDS
+   Apple-style grouped/inset feel
+───────────────────────────────────── */
+.card {
+  background: var(--bg-elevated);
+  border-radius: var(--r-xl);
+  border: 0.5px solid var(--sep);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  /* entry animation */
+  opacity: 0;
+  transform: translateY(10px) scale(0.99);
+  animation: cardReveal 0.5s cubic-bezier(0.32,0,0.4,1) forwards;
+}
+@keyframes cardReveal {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.col:nth-child(1) .card:nth-child(1) { animation-delay: 0.05s; }
+.col:nth-child(1) .card:nth-child(2) { animation-delay: 0.10s; }
+.col:nth-child(2) .card:nth-child(1) { animation-delay: 0.08s; }
+.col:nth-child(2) .card:nth-child(2) { animation-delay: 0.14s; }
+.col:nth-child(3) .card:nth-child(1) { animation-delay: 0.12s; }
+
+.card:hover {
+  border-color: rgba(255,255,255,0.16);
+  transition: border-color 0.2s ease;
+}
+
+/* card section header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--sep);
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--label-2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.section-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--label-3);
+  letter-spacing: 0.5px;
+}
+
+/* thin progress bar */
+.load-bar {
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  box-shadow: 0 0 6px var(--blue-glow);
+  transition: width 0.08s linear;
+  display: none;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────
+   MRI VIEWER
+───────────────────────────────────── */
+.viewer {
+  position: relative;
+  aspect-ratio: 1;
+  background: #000;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.viewer-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  transition: filter 0.4s ease;
+}
+.viewer-img.scanning {
+  filter: brightness(1.1) saturate(0.3) contrast(1.15);
+}
+
+/* drop state */
+.viewer-drop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.25s;
+}
+.viewer:hover .viewer-drop .upload-btn {
+  background: rgba(10,132,255,0.20);
+  border-color: rgba(10,132,255,0.35);
+}
+
+.upload-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--fill-3);
+  border: 0.5px solid var(--sep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  animation: uploadFloat 3s ease-in-out infinite;
+}
+@keyframes uploadFloat {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-5px); }
+}
+.upload-btn svg { width: 22px; height: 22px; }
+
+.drop-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--label-2);
+  text-align: center;
+}
+.drop-title strong { color: var(--blue); font-weight: 600; }
+.drop-formats {
+  font-size: 10px;
+  color: var(--label-3);
+  letter-spacing: 0.3px;
+}
+
+/* scan animation */
+.scan-line {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--blue) 30%,
+    rgba(90,200,250,0.9) 50%,
+    var(--blue) 70%,
+    transparent 100%);
+  box-shadow: 0 0 12px var(--blue), 0 0 30px rgba(10,132,255,0.3);
+  display: none;
+  z-index: 8;
+  animation: scanDown 2s linear infinite;
+}
+@keyframes scanDown { 0%{top:0} 100%{top:100%} }
+
+.scan-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(10,132,255,0.025) 0px,
+    rgba(10,132,255,0.025) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+  animation: overlayBreathe 0.2s linear infinite;
+}
+@keyframes overlayBreathe { 0%{opacity:0.6} 50%{opacity:1} 100%{opacity:0.6} }
+
+/* corner brackets */
+.bracket {
+  position: absolute;
+  width: 18px; height: 18px;
+  z-index: 9;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.32,0,0.4,1);
+}
+.viewer.has-image .bracket { opacity: 1; }
+.bracket.tl { top:10px; left:10px;  border-top:1.5px solid rgba(10,132,255,0.8); border-left:1.5px solid rgba(10,132,255,0.8); }
+.bracket.tr { top:10px; right:10px; border-top:1.5px solid rgba(10,132,255,0.8); border-right:1.5px solid rgba(10,132,255,0.8); }
+.bracket.bl { bottom:10px; left:10px; border-bottom:1.5px solid rgba(10,132,255,0.8); border-left:1.5px solid rgba(10,132,255,0.8); }
+.bracket.br { bottom:10px; right:10px; border-bottom:1.5px solid rgba(10,132,255,0.8); border-right:1.5px solid rgba(10,132,255,0.8); }
+
+/* vignette */
+.viewer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: radial-gradient(ellipse at center,
+    transparent 55%,
+    rgba(0,0,0,0.65) 100%);
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────
+   CLASSIFICATION RESULT
+───────────────────────────────────── */
+.class-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  gap: 5px;
+}
+.class-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--label-3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.class-value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--label-3);
+  text-align: center;
+  line-height: 1.1;
+  transition: color 0.5s, text-shadow 0.5s;
+}
+.class-meta {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--label-3);
+  transition: color 0.4s;
+}
+
+/* ─────────────────────────────────────
+   ACTION BUTTON
+   Apple-style filled blue button
+───────────────────────────────────── */
+.btn-primary {
+  margin: 8px 12px 12px;
+  padding: 11px 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.btn-primary:hover:not(:disabled) {
+  background: #1A8FFF;
+  box-shadow: 0 2px 8px rgba(10,132,255,0.4);
+  transform: translateY(-0.5px);
+}
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98) translateY(0);
+  background: #0777E8;
+}
+.btn-primary:disabled {
+  background: var(--fill-1);
+  color: var(--label-3);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────
+   CONFIDENCE RING
+───────────────────────────────────── */
+.ring-section {
+  padding: 22px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.ring-container {
+  position: relative;
+  width: 108px;
+  height: 108px;
+}
+.ring-container svg {
+  transform: rotate(-90deg);
+  display: block;
+}
+.ring-track {
+  fill: none;
+  stroke: var(--fill-1);
+  stroke-width: 6;
+}
+.ring-progress {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.32,0,0.4,1), stroke 0.4s;
+}
+.ring-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+.ring-number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--label-2);
+  letter-spacing: -0.5px;
+  transition: color 0.4s;
+}
+.ring-unit {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--label-3);
+  letter-spacing: 0.3px;
+}
+.ring-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--label-3);
+  letter-spacing: 0.3px;
+}
+
+/* ─────────────────────────────────────
+   DISTRIBUTION BARS
+───────────────────────────────────── */
+.bars-section {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bars-section::-webkit-scrollbar { width: 3px; }
+.bars-section::-webkit-scrollbar-thumb {
+  background: var(--fill-1);
+  border-radius: 2px;
+}
+
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.bar-item.visible { opacity: 1; transform: translateX(0); }
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.bar-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--label-2);
+}
+.bar-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--label-3);
+  font-variant-numeric: tabular-nums;
+}
+.bar-track {
+  height: 4px;
+  background: var(--fill-3);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.32,0,0.4,1);
+  position: relative;
+}
+
+.bars-empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--label-3);
+  font-size: var(--text-sm);
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* ─────────────────────────────────────
+   DIAGNOSIS / AI PANEL
+───────────────────────────────────── */
+.diag-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 22px;
+}
+.diag-scroll::-webkit-scrollbar { width: 3px; }
+.diag-scroll::-webkit-scrollbar-thumb { background: var(--fill-1); border-radius: 2px; }
+
+/* empty state */
+.diag-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--label-3);
+  text-align: center;
+}
+.diag-empty-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--fill-3);
+  border: 0.5px solid var(--sep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: emptyFloat 4s ease-in-out infinite;
+}
+.diag-empty-icon svg { width: 24px; height: 24px; }
+@keyframes emptyFloat {
+  0%,100%{ transform: translateY(0); opacity: 0.6; }
+  50%    { transform: translateY(-6px); opacity: 1; }
+}
+.diag-empty p {
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  color: var(--label-3);
+}
+
+/* result sections */
+.diag-results { display: none; flex-direction: column; gap: 22px; }
+.diag-results.show { display: flex; }
+
+.diag-group { display: flex; flex-direction: column; gap: 8px; }
+
+.group-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--label-3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.group-label::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--sep);
+}
+
+.group-text {
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  color: var(--label-2);
+  opacity: 0;
+  transform: translateY(4px);
+  animation: textFadeUp 0.4s ease forwards;
+}
+@keyframes textFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 0.5px solid;
+  opacity: 0;
+  transform: scale(0.9);
+  animation: chipReveal 0.25s cubic-bezier(0.32,0,0.4,1) forwards;
+}
+@keyframes chipReveal { to { opacity: 1; transform: scale(1); } }
+
+.recs-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.recs-list li {
+  display: flex;
+  gap: 10px;
+  font-size: var(--text-sm);
+  color: var(--label-2);
+  line-height: 1.65;
+  opacity: 0;
+  transform: translateX(-5px);
+  animation: recSlide 0.3s ease forwards;
+}
+@keyframes recSlide { to { opacity: 1; transform: translateX(0); } }
+.rec-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  margin-top: 7px;
+  box-shadow: 0 0 4px var(--blue-glow);
+}
+
+/* footer */
+.diag-footer {
+  padding: 10px 16px;
+  border-top: 0.5px solid var(--sep);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.15);
+}
+.footer-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--label-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-label strong { color: var(--label-2); font-weight: 600; }
+.footer-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--orange);
+  background: var(--orange-dim);
+  border: 0.5px solid rgba(255,159,10,0.25);
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+
+/* ─────────────────────────────────────
+   RESULT REVEAL ANIMATION
+───────────────────────────────────── */
+@keyframes valueReveal {
+  0%  { opacity:0; transform:scale(0.85) translateY(6px); filter:blur(3px); }
+  70% { transform:scale(1.02) translateY(-1px); filter:blur(0); }
+  100%{ opacity:1; transform:scale(1) translateY(0); }
+}
+.reveal { animation: valueReveal 0.5s cubic-bezier(0.32,0,0.4,1) forwards; }
+
+/* ─────────────────────────────────────
+   TYPING CURSOR
+───────────────────────────────────── */
+.typing::after {
+  content: '|';
+  color: var(--blue);
+  animation: cursorBlink 0.85s step-start infinite;
+  margin-left: 1px;
+}
+@keyframes cursorBlink { 50% { opacity: 0; } }
+
+/* ─────────────────────────────────────
+   LOADING DOTS
+───────────────────────────────────── */
+.dots {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.dots span {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: dotPop 1.1s ease-in-out infinite;
+}
+.dots span:nth-child(2){ animation-delay: 0.18s; }
+.dots span:nth-child(3){ animation-delay: 0.36s; }
+@keyframes dotPop {
+  0%,80%,100%{ transform:scale(0.4); opacity:0.25; }
+  40%{ transform:scale(1); opacity:1; }
+}
+
+/* ─────────────────────────────────────
+   UTILITY
+───────────────────────────────────── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── TITLEBAR ── -->
+  <header class="titlebar">
+    <div class="titlebar-left">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a4 4 0 0 1 4 4c0 1.5-.8 2.8-2 3.5V12h2a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-6 0v-1H7a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h2V9.5C7.8 8.8 7 7.5 7 6a4 4 0 0 1 4-4h1z"/>
+        </svg>
+      </div>
+      <span class="app-name">NeuroScan AI</span>
+    </div>
+
+    <div class="titlebar-center">
+      <div class="status-dot"></div>
+      <span>Engine Active</span>
+    </div>
+
+    <div class="titlebar-right">
+      <div class="badge badge-blue">89.2% Accuracy</div>
+      <div class="time-display" id="clock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- ── CONTENT ── -->
+  <div class="content">
+
+    <!-- COL 1: Scanner + Class -->
+    <div class="col">
+
+      <!-- MRI Viewer card -->
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">MRI Sequence</span>
+          <span class="section-badge" id="img-status">No Image</span>
+        </div>
+        <div class="load-bar" id="load-bar"></div>
+        <div class="viewer" id="viewer" onclick="document.getElementById('file-in').click()">
+          <div class="scan-line" id="scan-line"></div>
+          <div class="scan-overlay" id="scan-overlay"></div>
+          <div class="bracket tl"></div>
+          <div class="bracket tr"></div>
+          <div class="bracket bl"></div>
+          <div class="bracket br"></div>
+          <img class="viewer-img" id="viewer-img" alt="">
+          <div class="viewer-drop" id="viewer-drop">
+            <div class="upload-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(235,235,245,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div class="drop-title">Drop scan or <strong>browse</strong></div>
+            <span class="drop-formats">DICOM · PNG · JPG · TIFF</span>
+          </div>
+        </div>
+        <input type="file" id="file-in" class="hidden" accept="image/*" onchange="onFile(this.files[0])">
+      </div>
+
+      <!-- Classification card -->
+      <div class="card" style="flex:1; min-height:0;">
+        <div class="section-header">
+          <span class="section-title">Classification</span>
+        </div>
+        <div class="class-body">
+          <div class="class-eyebrow">Detected Condition</div>
+          <div class="class-value" id="class-value">—</div>
+          <div class="class-meta" id="class-meta">Run analysis to classify</div>
+        </div>
+        <button class="btn-primary" id="run-btn" disabled onclick="runAnalysis()">
+          Run Analysis
+        </button>
+      </div>
+
+    </div>
+
+    <!-- COL 2: Ring + Bars -->
+    <div class="col">
+
+      <!-- Confidence ring card -->
+      <div class="card">
+        <div class="section-header">
+          <span class="section-title">Confidence</span>
+          <span class="section-badge">Probability</span>
+        </div>
+        <div class="ring-section">
+          <div class="ring-container">
+            <svg viewBox="0 0 100 100" width="108" height="108">
+              <circle class="ring-track"    cx="50" cy="50" r="45"/>
+              <circle class="ring-progress" cx="50" cy="50" r="45" id="ring" stroke="var(--blue)"/>
+            </svg>
+            <div class="ring-inner">
+              <div class="ring-number" id="ring-num">0</div>
+              <div class="ring-unit">percent</div>
+            </div>
+          </div>
+          <div class="ring-label">Match Probability</div>
+        </div>
+      </div>
+
+      <!-- Distribution bars card -->
+      <div class="card" style="flex:1; min-height:0;">
+        <div class="section-header">
+          <span class="section-title">Class Distribution</span>
+          <span class="section-badge hidden" id="bars-spinner">
+            <span class="dots" style="color:var(--label-3)"><span></span><span></span><span></span></span>
+          </span>
+        </div>
+        <div class="bars-section" id="bars-section">
+          <div class="bars-empty-state" id="bars-empty">
+            Awaiting analysis
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COL 3: AI Diagnosis -->
+    <div class="col">
+      <div class="card" style="height:100%; min-height:0;">
+        <div class="section-header">
+          <span class="section-title">AI Clinical Interpretation</span>
+          <span class="section-badge" id="diag-status">Standby</span>
+        </div>
+
+        <div class="diag-scroll">
+          <!-- empty state -->
+          <div class="diag-empty" id="diag-empty">
+            <div class="diag-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(235,235,245,0.25)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <p>Upload a scan and run analysis<br>to generate a clinical interpretation.</p>
+          </div>
+
+          <!-- results -->
+          <div class="diag-results" id="diag-results">
+            <div class="diag-group">
+              <div class="group-label">Diagnostic Summary</div>
+              <div class="group-text" id="d-summary"></div>
+            </div>
+            <div class="diag-group">
+              <div class="group-label">Radiological Findings</div>
+              <div class="chips-row" id="d-chips"></div>
+            </div>
+            <div class="diag-group">
+              <div class="group-label">Clinical Observations</div>
+              <div class="group-text" id="d-obs" style="animation-delay:0.15s;"></div>
+            </div>
+            <div class="diag-group">
+              <div class="group-label">Recommended Next Steps</div>
+              <ul class="recs-list" id="d-recs"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="diag-footer">
+          <span class="footer-label">
+            <strong>Neural Engine</strong> v4.2 · Active
+          </span>
+          <span class="footer-warning">
+            ⚠ Not for Clinical Use
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── Clock ── */
+(function tick() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-US',{hour12:false});
+  setTimeout(tick, 1000);
+})();
+
+/* ── Data ── */
+const CLASSES = {
+  glioma:     { label:'Glioma Tumor',      color:'#FF453A', chips:['Focal Hyperintensity','Irregular Border','Mass Effect','Perilesional Edema'] },
+  meningioma: { label:'Meningioma',         color:'#FF9F0A', chips:['Dural Tail Sign','Homogeneous Enhancement','Well-Defined Margins','Calcification'] },
+  pituitary:  { label:'Pituitary Tumor',    color:'#5E5CE6', chips:['Sellar Expansion','Optic Chiasm Proximity','Microadenoma Pattern','T1 Hypointensity'] },
+  notumor:    { label:'No Tumor Detected',  color:'#30D158', chips:['Normal Parenchyma','Symmetric Structures','No Mass Effect','Clear CSF Spaces'] }
+};
+
+const DIAG = {
+  glioma: {
+    summary: "The model identified radiological features consistent with gliomatous tissue at 87.3% confidence. Voxel analysis reveals an irregular hyperintense region with ill-defined margins, characteristic of infiltrative glial neoplasm.",
+    obs: "Elevated T2-FLAIR intensity with surrounding vasogenic edema. Mass effect present with midline shift indicators. Lesion topology consistent with high-grade glioma per WHO CNS Tumor Classification 2021.",
+    recs: ["Contrast-enhanced T1 MRI to assess blood-brain barrier disruption","MR Spectroscopy — elevated Cho:NAA ratio expected","Perfusion MRI (DSC/ASL) to evaluate neoangiogenesis","Multidisciplinary tumor board review before biopsy planning","Functional MRI mapping if adjacent to eloquent cortex"]
+  },
+  meningioma: {
+    summary: "Extra-axial meningeal neoplasm at 82.1% confidence. Well-circumscribed lesion with characteristic dural attachment, consistent with WHO Grade I–II meningioma.",
+    obs: "Homogeneous signal with broad-based dural interface. No significant surrounding edema. Calcification and 'dural tail' enhancement suggest meningothelial subtype. No midline shift.",
+    recs: ["Gadolinium-enhanced T1 MRI for dural tail confirmation","CT without contrast for calcification quantification","Ophthalmological assessment if optic apparatus involved","SRS evaluation if lesion < 3cm","Annual surveillance if observation-only approach elected"]
+  },
+  pituitary: {
+    summary: "Sellar region abnormality at 79.6% confidence matching pituitary adenoma. Intrasellar mass with potential suprasellar extension, raising concern for visual field compromise.",
+    obs: "Hypo-to-isointense T1 signal relative to normal pituitary. Sellar floor remodeling suggested. Dynamic contrast needed to differentiate microadenoma from Rathke's cleft cyst.",
+    recs: ["Visual field perimetry — Goldman or Humphrey automated testing","Full pituitary hormone panel: GH, IGF-1, prolactin, ACTH, TSH","Pituitary-protocol MRI with dynamic gadolinium enhancement","Endocrinology + Neurosurgery joint consultation","Genetic counseling if MEN1 syndrome suspected"]
+  },
+  notumor: {
+    summary: "No neoplastic pathology detected at 93.4% confidence. Preserved parenchymal architecture with no discrete mass, abnormal enhancement, or midline shift.",
+    obs: "Sulcal and gyral patterns symmetric and age-appropriate. Ventricular morphology within normal limits. White matter shows no focal abnormality. CSF spaces patent.",
+    recs: ["Clinical correlation with presenting symptoms is essential","EEG if functional neurological etiology is suspected","Contrast MRI if leptomeningeal disease is a concern","Follow-up imaging in 12 months if symptoms persist","LP for CSF analysis if infectious etiology suspected"]
+  }
+};
+
+/* ── Utils ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function setStatus(id, txt, color) {
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  if (color) el.style.color = color;
+}
+
+function typewrite(id, text, speed = 10) {
+  return new Promise(res => {
+    const el = document.getElementById(id);
+    el.textContent = '';
+    el.classList.add('typing');
+    let i = 0;
+    (function t() {
+      if (i < text.length) { el.textContent += text[i++]; setTimeout(t, speed); }
+      else { el.classList.remove('typing'); res(); }
+    })();
+  });
+}
+
+function animRing(target, color) {
+  const ring = document.getElementById('ring');
+  const num  = document.getElementById('ring-num');
+  const circ = 283;
+  ring.style.stroke = color;
+  ring.style.filter = `drop-shadow(0 0 5px ${color}88)`;
+  ring.style.strokeDashoffset = circ - (target / 100) * circ;
+  num.style.color = color;
+  let c = 0; const step = target / 60;
+  const iv = setInterval(() => {
+    c = Math.min(c + step, target);
+    num.textContent = c.toFixed(1);
+    if (c >= target) { num.textContent = target.toFixed(1); clearInterval(iv); }
+  }, 16);
+}
+
+/* ── File load ── */
+function onFile(file) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = e => {
+    const img = document.getElementById('viewer-img');
+    img.onload = () => {
+      img.style.display = 'block';
+      document.getElementById('viewer-drop').style.display = 'none';
+      document.getElementById('viewer').classList.add('has-image');
+      document.getElementById('run-btn').disabled = false;
+      setStatus('img-status', 'Ready', 'var(--green)');
+    };
+    img.src = e.target.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* ── Analysis ── */
+async function runAnalysis() {
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.innerHTML = 'Analyzing<span class="dots"><span></span><span></span><span></span></span>';
+
+  const scanLine  = document.getElementById('scan-line');
+  const scanOvl   = document.getElementById('scan-overlay');
+  const loadBar   = document.getElementById('load-bar');
+  const img       = document.getElementById('viewer-img');
+
+  scanLine.style.display = 'block';
+  scanOvl.style.display  = 'block';
+  img.classList.add('scanning');
+  loadBar.style.display  = 'block';
+  document.getElementById('bars-spinner').classList.remove('hidden');
+  setStatus('diag-status', 'Processing…', 'var(--blue)');
+  setStatus('img-status',  'Scanning',    'var(--blue)');
+
+  let p = 0;
+  const piv = setInterval(() => {
+    p = Math.min(p + Math.random() * 3.2, 90);
+    loadBar.style.width = p + '%';
+  }, 80);
+
+  await sleep(2500);
+
+  clearInterval(piv);
+  loadBar.style.width = '100%';
+  await sleep(260);
+  loadBar.style.display = 'none';
+  loadBar.style.width = '0%';
+  scanLine.style.display = 'none';
+  scanOvl.style.display  = 'none';
+  img.classList.remove('scanning');
+  document.getElementById('bars-spinner').classList.add('hidden');
+
+  /* ── results ── */
+  const winner = 'glioma', conf = 87.3;
+  const m = CLASSES[winner];
+
+  // class value
+  const cv = document.getElementById('class-value');
+  cv.textContent = m.label;
+  cv.style.color = m.color;
+  cv.style.textShadow = `0 0 24px ${m.color}44`;
+  cv.classList.add('reveal');
+  const cm = document.getElementById('class-meta');
+  cm.textContent = `${conf}% confidence · High`;
+  cm.style.color = m.color;
+
+  setStatus('img-status', 'Complete', 'var(--green)');
+
+  animRing(conf, m.color);
+  renderBars(winner, conf);
+
+  document.getElementById('diag-empty').style.display = 'none';
+  await sleep(180);
+  await renderDiagnosis(winner);
+  setStatus('diag-status', 'Complete', 'var(--green)');
+
+  btn.innerHTML = 'Run Again';
+  btn.disabled = false;
+}
+
+function renderBars(winner, conf) {
+  document.getElementById('bars-empty').style.display = 'none';
+  const section = document.getElementById('bars-section');
+  section.querySelectorAll('.bar-item').forEach(el => el.remove());
+
+  Object.entries(CLASSES).forEach(([key, m], i) => {
+    const score = key === winner ? conf : +(Math.random() * 7 + 1).toFixed(1);
+    const item  = document.createElement('div');
+    item.className = 'bar-item';
+    item.innerHTML = `
+      <div class="bar-header">
+        <span class="bar-label" style="color:${m.color}">${m.label}</span>
+        <span class="bar-value">${score}%</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="bf-${key}" style="background:${m.color}"></div>
+      </div>`;
+    section.appendChild(item);
+
+    setTimeout(() => item.classList.add('visible'), i * 70);
+    setTimeout(() => {
+      document.getElementById(`bf-${key}`).style.width = score + '%';
+    }, 80 + i * 70);
+  });
+}
+
+async function renderDiagnosis(winner) {
+  const d = DIAG[winner], m = CLASSES[winner];
+  document.getElementById('diag-results').classList.add('show');
+
+  await typewrite('d-summary', d.summary, 10);
+
+  // chips
+  const chips = document.getElementById('d-chips');
+  chips.innerHTML = '';
+  m.chips.forEach((c, i) => {
+    const el = document.createElement('span');
+    el.className = 'chip';
+    el.textContent = c;
+    el.style.cssText = `color:${m.color}; border-color:${m.color}40; background:${m.color}14; animation-delay:${i*65}ms`;
+    chips.appendChild(el);
+  });
+
+  await sleep(200);
+  await typewrite('d-obs', d.obs, 9);
+
+  const recs = document.getElementById('d-recs');
+  recs.innerHTML = '';
+  d.recs.forEach((r, i) => {
+    const li = document.createElement('li');
+    li.style.animationDelay = `${i * 85}ms`;
+    li.innerHTML = `<div class="rec-dot"></div><span>${r}</span>`;
+    recs.appendChild(li);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+# Model file (too large for GitHub — download separately)
+backend/brain_tumor_cnn.h5
+*.h5
+*.pkl
+*.pt
+*.pth
+
+# Dataset images (download from Kaggle)
+dataset/Training/
+dataset/Testing/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+env/
+.venv/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+*.temp
