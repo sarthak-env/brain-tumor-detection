@@ -32,8 +32,8 @@ A deep learning system that classifies brain MRI scans into 4 categories using a
 
 ```
 neuroscan-ai/
-├── frontend/       → Web interface (HTML/CSS/JS)
-├── backend/        → Flask API serving the model (coming soon)
+├── frontend/       → Web interface
+├── backend/        → F
 ├── notebook/       → Training notebook (Google Colab)
 └── dataset/        → Dataset download instructions
 ```
