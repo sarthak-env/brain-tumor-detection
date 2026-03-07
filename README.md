@@ -40,28 +40,6 @@ neuroscan-ai/
 
 ---
 
-## How to Run
-
-### Frontend Only (no backend needed for UI demo)
-Just open `frontend/index.html` in any browser. No setup needed.
-
-### Full Stack (frontend + real predictions)
-
-**Step 1 — Download the trained model**
-Download `brain_tumor_cnn.h5` from Google Drive (link below) and place it in `backend/`
-
-**Step 2 — Run the backend**
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-
-**Step 3 — Open the frontend**
-Open `frontend/index.html` in any browser
-
----
-
 ## Dataset
 
 Brain Tumor MRI Dataset by Masoud Nickparvar
@@ -94,7 +72,7 @@ Dense(4) + Softmax → Prediction
 ## Tech Stack
 
 - **Model:** TensorFlow 2.19 / Keras
-- **Backend:** Flask + Flask-CORS
+- **Backend:** 
 - **Frontend:** HTML, CSS, JavaScript, Lucide Icons
 - **Training:** Google Colab (NVIDIA Tesla T4 GPU)
 - **Dataset:** Kaggle — Brain Tumor MRI Dataset
