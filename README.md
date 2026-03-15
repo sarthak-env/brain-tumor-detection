@@ -1,4 +1,4 @@
-# 🧠 NeuroScan AI — Brain Tumor Classification
+# NeuroScan AI — Brain Tumor Classification
 
 A deep learning system that classifies brain MRI scans into 4 categories using a Convolutional Neural Network built completely from scratch. No transfer learning. No pretrained weights.
 
@@ -33,7 +33,7 @@ A deep learning system that classifies brain MRI scans into 4 categories using a
 ```
 neuroscan-ai/
 ├── frontend/       → Web interface
-├── backend/        → F
+├── backend/        →
 ├── notebook/       → Training notebook (Google Colab)
 └── dataset/        → Dataset download instructions
 ```
