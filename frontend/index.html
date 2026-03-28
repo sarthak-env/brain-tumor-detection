@@ -1077,8 +1077,11 @@ function animRing(target, color) {
 }
 
 /* ── File load ── */
+let currentFile = null;  // Store file for backend upload
+
 function onFile(file) {
   if (!file) return;
+  currentFile = file;  // Save reference for backend call
   const fr = new FileReader();
   fr.onload = e => {
     const img = document.getElementById('viewer-img');
@@ -1119,7 +1122,43 @@ async function runAnalysis() {
     loadBar.style.width = p + '%';
   }, 80);
 
-  await sleep(2500);
+  // ── Call real Flask backend ──────────────────────────────────────────────
+  let winner, conf, allScores;
+  try {
+    const formData = new FormData();
+    formData.append('image', currentFile);
+
+    const response = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Server error');
+    }
+
+    const result = await response.json();
+    winner    = result.prediction;
+    conf      = parseFloat(result.confidence.toFixed(1));
+    allScores = result.scores;
+
+  } catch (err) {
+    // Show error to user
+    clearInterval(piv);
+    loadBar.style.display = 'none';
+    scanLine.style.display = 'none';
+    scanOvl.style.display  = 'none';
+    img.classList.remove('scanning');
+    document.getElementById('bars-spinner').classList.add('hidden');
+    setStatus('img-status',  'Error', 'var(--red)');
+    setStatus('diag-status', 'Failed', 'var(--red)');
+    alert('Could not connect to backend.\n\nMake sure:\n1. Flask server is running (python app.py)\n2. brain_tumor_cnn.h5 is in the backend folder\n\nError: ' + err.message);
+    btn.innerHTML = 'Run Again';
+    btn.disabled = false;
+    return;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   clearInterval(piv);
   loadBar.style.width = '100%';
@@ -1132,7 +1171,6 @@ async function runAnalysis() {
   document.getElementById('bars-spinner').classList.add('hidden');
 
   /* ── results ── */
-  const winner = 'glioma', conf = 87.3;
   const m = CLASSES[winner];
 
   // class value
@@ -1148,7 +1186,7 @@ async function runAnalysis() {
   setStatus('img-status', 'Complete', 'var(--green)');
 
   animRing(conf, m.color);
-  renderBars(winner, conf);
+  renderBars(winner, conf, allScores);
 
   document.getElementById('diag-empty').style.display = 'none';
   await sleep(180);
@@ -1159,13 +1197,20 @@ async function runAnalysis() {
   btn.disabled = false;
 }
 
-function renderBars(winner, conf) {
+function renderBars(winner, conf, allScores) {
   document.getElementById('bars-empty').style.display = 'none';
   const section = document.getElementById('bars-section');
   section.querySelectorAll('.bar-item').forEach(el => el.remove());
 
-  Object.entries(CLASSES).forEach(([key, m], i) => {
-    const score = key === winner ? conf : +(Math.random() * 7 + 1).toFixed(1);
+  // Sort classes by score descending so highest shows first
+  const sortedEntries = Object.entries(CLASSES).sort((a, b) => {
+    return (allScores[b[0]] || 0) - (allScores[a[0]] || 0);
+  });
+
+  sortedEntries.forEach(([key, m], i) => {
+    const score = allScores && allScores[key] !== undefined
+      ? +allScores[key].toFixed(1)
+      : (key === winner ? conf : 0);
     const item  = document.createElement('div');
     item.className = 'bar-item';
     item.innerHTML = `
