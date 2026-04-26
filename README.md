@@ -1,6 +1,6 @@
 # 🧠 NeuroScan AI — Brain Tumor Classification
 
-A deep learning system that classifies brain MRI scans into 4 categories using a Convolutional Neural Network built completely from scratch. No transfer learning. No pretrained weights.
+A deep learning system that classifies brain MRI scans into 4 categories using **VGG16 Transfer Learning**. Built on top of ImageNet pretrained weights with a custom classification head fine-tuned for medical imaging.
 
 ---
 
@@ -8,12 +8,13 @@ A deep learning system that classifies brain MRI scans into 4 categories using a
 
 | Metric | Score |
 |--------|-------|
-| Test Accuracy | 89% |
-| Macro F1-Score | 87% |
+| Model | VGG16 (Transfer Learning) |
+| Input Size | 224 × 224 |
 | Total Classes | 4 |
 | Training Images | 5,712 |
 | Test Images | 1,311 |
-| Total Parameters | 8,516,420 |
+| Base Model | VGG16 (ImageNet weights) |
+| Fine-tuned Layers | Last 3 Conv layers |
 
 ---
 
@@ -31,12 +32,26 @@ A deep learning system that classifies brain MRI scans into 4 categories using a
 ## Project Structure
 
 ```
-neuroscan-ai/
-├── frontend/       → Web interface
-├── backend/        → F
+brain-tumor-detection/
+├── frontend/       → Web interface (HTML/CSS/JS)
+├── backend/        → Flask API serving the model
 ├── notebook/       → Training notebook (Google Colab)
 └── dataset/        → Dataset download instructions
 ```
+
+---
+
+## How to Run
+
+### Backend
+```bash
+cd backend
+pip install -r requirements.txt
+python app.py
+```
+
+### Frontend
+Open `frontend/index.html` in any browser.
 
 ---
 
@@ -52,53 +67,53 @@ Brain Tumor MRI Dataset by Masoud Nickparvar
 ## Model Architecture
 
 ```
-Input (128×128×3)
+Input (224×224×3)
       ↓
-Block 1: Conv2D(32) → BatchNorm → MaxPool → Dropout(0.25)
+VGG16 Base (ImageNet weights)
+  - 13 Convolutional layers
+  - Last 3 layers fine-tuned
+  - All others frozen
       ↓
-Block 2: Conv2D(64) → BatchNorm → MaxPool → Dropout(0.25)
+Flatten
       ↓
-Block 3: Conv2D(128) → BatchNorm → MaxPool → Dropout(0.25)
+Dropout(0.3)
       ↓
-Flatten → Dense(256) → Dropout(0.3)
+Dense(256, relu)
       ↓
-Dense(128) → Dropout(0.2)
+Dropout(0.2)
       ↓
-Dense(4) + Softmax → Prediction
+Dense(4, softmax) → Prediction
 ```
+
+---
+
+## Why Transfer Learning?
+
+Training a deep CNN from scratch on medical imaging data is difficult — we typically don't have millions of labelled MRI scans, and training converges very slowly without a strong starting point.
+
+VGG16 was originally trained on ImageNet, a dataset of 1.4 million images across 1000 categories. It learned a rich hierarchy of visual features — edges and textures in early layers, shapes and patterns in middle layers, and high-level structures in deeper layers. These low-level features are universal and transfer well to MRI scans.
+
+Instead of initialising with random weights, we start with VGG16's pretrained weights and only adapt the final layers to our specific task — classifying brain tumours into four categories. We freeze most of the base model and only unfreeze the last 3 convolutional layers for fine-tuning. On top we attach a custom classification head outputting probabilities for 4 classes.
+
+**Result:** faster convergence, better accuracy on a small dataset, and far less compute compared to training from scratch.
 
 ---
 
 ## Tech Stack
 
-- **Model:** TensorFlow 2.19 / Keras
-- **Backend:** 
+- **Model:** VGG16 + TensorFlow 2.x / Keras
+- **Backend:** Flask + Flask-CORS
 - **Frontend:** HTML, CSS, JavaScript, Lucide Icons
 - **Training:** Google Colab (NVIDIA Tesla T4 GPU)
 - **Dataset:** Kaggle — Brain Tumor MRI Dataset
 
 ---
 
-## Classification Report
+## Class Order (from training)
 
+```python
+{'glioma': 0, 'meningioma': 1, 'notumor': 2, 'pituitary': 3}
 ```
-              precision    recall  f1-score   support
-
-      glioma       0.83      0.98      0.89       300
-  meningioma       0.97      0.56      0.71       306
-     notumor       0.88      1.00      0.94       405
-   pituitary       0.92      0.99      0.96       300
-
-    accuracy                           0.89      1311
-   macro avg       0.90      0.88      0.87      1311
-weighted avg       0.90      0.89      0.88      1311
-```
-
----
-
-## Why CNN From Scratch?
-
-The goal was to deeply understand how Convolutional Neural Networks work by building every layer manually — Conv2D, BatchNormalization, MaxPooling, Dropout, Dense — without relying on pretrained weights. Transfer learning with VGG16 or ResNet would achieve 95%+ but provides less understanding of the underlying architecture.
 
 ---
 
